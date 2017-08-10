@@ -8,12 +8,12 @@ let connections = [];
 const initSock = () => {
 
     var app = sockjs.createServer({ 
-        sockjs_url: 'http://localhost:3000/sockjs-client/dist/sockjs.min.js'
+        sockjs_url: 'http://localhost:3000/node_modules/sockjs-client/dist/sockjs.min.js'
     });
 
     var events = {
         file: (data) => {
-            outputFileSync(path.join(__dirname, '../userscripts', data.name), data.content, 'utf-8');
+            outputFileSync(data.name, data.content, 'utf-8');
             connections.forEach(conn => {
                 conn.write(JSON.stringify(data));
             })

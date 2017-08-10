@@ -6,6 +6,7 @@ namespace CodeEditing
         MonacoEditor:any;
         Files:File[];
         Riot:any;
+        Sock:any;
 
         constructor(){
             this.Files = [];
@@ -41,18 +42,18 @@ namespace CodeEditing
             this.Riot.update();
         }
 
-        LoadFile(file:any):void
+        LoadFile(name:any, content:any):void
         {
             //** replace file if it exists */
-            let exists = this.Files.filter((f) => f.Name === file.Name);
+            let exists = this.Files.filter((f) => f.Name === name);
             
             if (exists.length > 0)
                 {
-                    exists[0].Name = file.Name;
-                    exists[0].Content = file.Content;
+                    exists[0].Name = name;
+                    exists[0].Content = content;
                 }
                 else
-                    this.Files.push(new File(file.Name, file.Content));;
+                    this.Files.push(new File(name, content));;
 
             //** Finally, refresh editor */
             this.RefreshEditor();
@@ -61,6 +62,7 @@ namespace CodeEditing
         SaveFile(file:File):void
         {
             //** SockJS goes here */
+            this.Sock.call('file', { name:file.Name, content: file.Content });
         }
 
         EditorTextChanged():void

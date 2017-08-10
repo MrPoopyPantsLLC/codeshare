@@ -14,25 +14,18 @@
     <script>
         this.CodeEditor = new CodeEditing.CodeEditor();
         this.CodeEditor.Riot = riot;
+        this.CodeEditor.Sock = sock;
         var files = this.CodeEditor.Files;
 
-        files.push(new CodeEditing.File("test.js", "blahblah"));
-        files.push(new CodeEditing.File("coolio.js", "gangsta"));
-        files.push(new CodeEditing.File("hello.js", "class Kitty{}"));
+        // files.push(new CodeEditing.File("test.js", "blahblah"));
+        // files.push(new CodeEditing.File("coolio.js", "gangsta"));
+        // files.push(new CodeEditing.File("hello.js", "class Kitty{}"));
 
-        sock.call('file', JSON.stringify({
-            event: 'file',
-            data: {
-                name:'',
-                content: ''
-            }
-        }));
-
-        sock.on('file', (e) => {
-            var data = JSON.parse(e.data);
+        sock.on('file', (data) => {
             var name = data.name;
             var content = data.content;
-        })
+            this.CodeEditor.LoadFile(name, content);
+        });
 
         riot.mount('editor', {CodeEditor : CodeEditor});
     </script>
@@ -65,7 +58,7 @@
             let files = data;
             for (let i = 0; i < files.length; i++)
              {
-                 this.CodeEditor.LoadFile(files[i]);
+                 this.CodeEditor.LoadFile(files[i].Name, files[i].Content);
              }
             this.CodeEditor.RefreshEditor();
             })

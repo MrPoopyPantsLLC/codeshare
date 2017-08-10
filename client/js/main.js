@@ -1,4 +1,4 @@
-var sock = new SockJS('/comms');
+var sock = new SockJS('/echo');
  sock.onopen = function() {
      console.log('open');
  };

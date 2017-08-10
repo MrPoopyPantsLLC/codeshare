@@ -27,21 +27,22 @@ var CodeEditing;
             }
             this.Riot.update();
         };
-        CodeEditor.prototype.LoadFile = function (file) {
+        CodeEditor.prototype.LoadFile = function (name, content) {
             //** replace file if it exists */
-            var exists = this.Files.filter(function (f) { return f.Name === file.Name; });
+            var exists = this.Files.filter(function (f) { return f.Name === name; });
             if (exists.length > 0) {
-                exists[0].Name = file.Name;
-                exists[0].Content = file.Content;
+                exists[0].Name = name;
+                exists[0].Content = content;
             }
             else
-                this.Files.push(new File(file.Name, file.Content));
+                this.Files.push(new File(name, content));
             ;
             //** Finally, refresh editor */
             this.RefreshEditor();
         };
         CodeEditor.prototype.SaveFile = function (file) {
             //** SockJS goes here */
+            this.Sock.call('file', { name: file.Name, content: file.Content });
         };
         CodeEditor.prototype.EditorTextChanged = function () {
             //** Change content of selected file */
