@@ -1,0 +1,27 @@
+<editor>
+    <div class="editor-container">
+        <div class="tabs-bar">
+            <div class="file-control"> + </div>
+            <div class="tab" each={ files } selected={Selected} onclick={parent.Select}> 
+                <label class="tab-text"> {Name} </label> 
+            </div>
+        </div>
+        <div class="editor" id="container" style="width:750px;height:750px;border:1px solid grey" onkeyup={EditorKeyPress}>
+            
+        </div>
+    </div>
+    
+    <link rel="stylesheet" type="text/css" href="./Editor/editor.css">
+    <script>
+        var files = opts.CodeEditor.Files;
+        var CodeEditor = opts.CodeEditor;
+
+        Select(event) {
+            CodeEditor.SelectFile(event.item);
+        }
+        EditorKeyPress(event){
+            CodeEditor.EditorTextChanged();
+        }
+    </script>
+
+</editor>

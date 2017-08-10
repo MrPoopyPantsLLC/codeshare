@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Editor</title>
+  </head>
+  <body>
+    <editor></editor>
+
+    <script src="./Editor/CodeEditor.js"></script>
+    <script type="riot/tag" src="./Editor/editor.html"></script>
+    <script src="https://cdn.jsdelivr.net/npm/riot@3.6/riot+compiler.min.js"></script>
+    <script>
+        this.CodeEditor = new CodeEditing.CodeEditor();
+        var files = this.CodeEditor.Files;
+        files.push(new CodeEditing.File("test.js", "blahblah"));
+        files.push(new CodeEditing.File("coolio.js", "gangsta"));
+        files.push(new CodeEditing.File("hello.js", "class Kitty{}"));
+
+        riot.mount('editor', {CodeEditor : CodeEditor});
+    </script>
+    
+    <script src="./node_modules/monaco-editor/min/vs/loader.js"></script>
+    <script>
+        require.config({ paths: { 'vs': './node_modules/monaco-editor/min/vs' }});
+        require(['vs/editor/editor.main'], function() {
+            CodeEditor.MonacoEditor = monaco.editor.create(document.getElementById('container'), {
+                value: [
+                    'function x() {',
+                    '\tconsole.log("Hello world!");',
+                    '}'
+                ].join('\n'),
+                language: 'typescript',
+                theme: 'vs-dark'
+                //automaticLayout: true
+            });
+            CodeEditor.Monaco = this.monaco;
+            CodeEditor.RefreshEditor();
+        });  
+    </script>
+
+  </body>
+</html>
