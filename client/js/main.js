@@ -38,3 +38,5 @@ var sock = new SockJS('/comms');
         }));
      }
  }
+
+ InitSock(sock);
