@@ -15,7 +15,7 @@ const initSock = () => {
         file: (data) => {
             outputFileSync(path.join(__dirname, '../userscripts', data.name), data.content, 'utf-8');
             connections.forEach(conn => {
-                conn.write(data.content);
+                conn.write(JSON.stringify(data));
             })
         }
     };
@@ -30,7 +30,7 @@ const initSock = () => {
             connections.splice(connections.indexOf(conn), );
         });
         connections.push(conn);
-        
+
     });
     
     var server = http.createServer();
