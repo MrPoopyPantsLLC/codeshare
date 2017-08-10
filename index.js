@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 
+//** TEST */
 //** Allow any file to be accessed from within the server directory 
 app.use(express.static(__dirname));
 
