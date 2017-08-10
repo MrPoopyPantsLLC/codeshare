@@ -34,6 +34,13 @@ const initSock = () => {
     });
     
     var server = http.createServer();
+
+    server.addListener('request', function(req, res) {
+    });
+    
+    server.addListener('upgrade', function(req,res){
+        res.end();
+    });
     
     app.installHandlers(server, {prefix:'/echo'});
     
