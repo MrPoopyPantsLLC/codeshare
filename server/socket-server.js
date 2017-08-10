@@ -1,21 +1,41 @@
 var http = require('http');
 var sockjs = require('sockjs');
+var path = require('path');
+var outputFileSync = require('output-file-sync');
+
+let connections = [];
 
 const initSock = () => {
-    var echo = sockjs.createServer({ 
-    sockjs_url: 'http://localhost:3000/sockjs-client/dist/sockjs.min.js'
+
+    var app = sockjs.createServer({ 
+        sockjs_url: 'http://localhost:3000/sockjs-client/dist/sockjs.min.js'
     });
 
-    echo.on('connection', function(conn) {
+    var events = {
+        file: (data) => {
+            outputFileSync(path.join(__dirname, '../userscripts', data.name), data.content, 'utf-8');
+            connections.forEach(conn => {
+                conn.write(data.content);
+            })
+        }
+    };
+
+    app.on('connection', function(conn) {
+
         conn.on('data', function(message) {
-            conn.write(message);
+            var obj = JSON.parse(message);
+            events[message.event](message.data);
         });
-        conn.on('close', function() {});
+        conn.on('close', function() {
+            connections.splice(connections.indexOf(conn), );
+        });
+        connections.push(conn);
+        
     });
     
     var server = http.createServer();
     
-    echo.installHandlers(server, {prefix:'/echo'});
+    app.installHandlers(server, {prefix:'/echo'});
     
     return server;
 };
