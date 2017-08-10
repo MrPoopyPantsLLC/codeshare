@@ -6,6 +6,8 @@
   <body>
     <editor></editor>
 
+    <script src="node_modules/sockjs-client/dist/sockjs.min.js"></script>
+    <script src="client/js/main.js"></script>
     <script src="./Editor/CodeEditor.js"></script>
     <script type="riot/tag" src="./Editor/editor.html"></script>
     <script src="https://cdn.jsdelivr.net/npm/riot@3.6/riot+compiler.min.js"></script>
@@ -17,6 +19,20 @@
         files.push(new CodeEditing.File("test.js", "blahblah"));
         files.push(new CodeEditing.File("coolio.js", "gangsta"));
         files.push(new CodeEditing.File("hello.js", "class Kitty{}"));
+
+        sock.call('file', JSON.stringify({
+            event: 'file',
+            data: {
+                name:'',
+                content: ''
+            }
+        }));
+
+        sock.on('file', (e) => {
+            var data = JSON.parse(e.data);
+            var name = data.name;
+            var content = data.content;
+        })
 
         riot.mount('editor', {CodeEditor : CodeEditor});
     </script>
