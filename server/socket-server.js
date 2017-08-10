@@ -15,7 +15,7 @@ const initSock = () => {
         file: (data) => {
             outputFileSync(data.name, data.content, 'utf-8');
             connections.forEach(conn => {
-                conn.write(JSON.stringify(data));
+                conn.write(JSON.stringify({event:"file", data:data, from:data.from}));
             })
         }
     };
@@ -24,7 +24,7 @@ const initSock = () => {
 
         conn.on('data', function(message) {
             var obj = JSON.parse(message);
-            events[message.event](message.data);
+            events[obj.event](obj.data);
         });
         conn.on('close', function() {
             connections.splice(connections.indexOf(conn), 1);

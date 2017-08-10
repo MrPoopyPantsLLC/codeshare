@@ -3,6 +3,7 @@ var CodeEditing;
     var CodeEditor = (function () {
         function CodeEditor() {
             this.Files = [];
+            this.ID = Math.random();
         }
         CodeEditor.prototype.RefreshEditor = function () {
             //** Change text to content of selected file */
@@ -12,27 +13,35 @@ var CodeEditing;
                 this.MonacoEditor.setValue(file.Content);
             for (var i = 0; i < this.Files.length; i++) {
                 var cur = this.Files[i];
-                if (cur.Selected === true) {
-                    //** Unload lib of selected file */
-                    if (file.MonacoHint !== undefined)
-                        file.MonacoHint.dispose();
-                    file.MonacoHint = undefined;
-                }
-                else if (cur.MonacoHint === undefined) {
-                    //** Load library if it isn't loaded */
-                    var fact = cur.Content;
-                    var factFilename = cur.Name;
-                    cur.MonacoHint = this.Monaco.languages.typescript.typescriptDefaults.addExtraLib(fact, factFilename);
-                }
+                if (cur.Selected === true)
+                    this.UnloadHint(cur);
+                else if (cur.MonacoHint === undefined)
+                    this.LoadHint(cur);
             }
             this.Riot.update();
         };
-        CodeEditor.prototype.LoadFile = function (name, content) {
+        CodeEditor.prototype.LoadHint = function (file) {
+            //** Load library if it isn't loaded */
+            var fact = file.Content;
+            var factFilename = file.Name;
+            file.MonacoHint = this.Monaco.languages.typescript.typescriptDefaults.addExtraLib(fact, factFilename);
+        };
+        CodeEditor.prototype.UnloadHint = function (file) {
+            //** Unload lib of selected file */
+            if (file.MonacoHint !== undefined)
+                file.MonacoHint.dispose();
+            file.MonacoHint = undefined;
+        };
+        CodeEditor.prototype.LoadFile = function (name, content, id) {
+            //** If file ID is equal to our ID, don't do anything - it is a callback from textchanged */
+            if (id && id === this.ID)
+                return;
             //** replace file if it exists */
             var exists = this.Files.filter(function (f) { return f.Name === name; });
             if (exists.length > 0) {
                 exists[0].Name = name;
                 exists[0].Content = content;
+                this.UnloadHint(exists[0]); //** Reload the hints for the updated file */
             }
             else
                 this.Files.push(new File(name, content));
@@ -40,9 +49,10 @@ var CodeEditing;
             //** Finally, refresh editor */
             this.RefreshEditor();
         };
-        CodeEditor.prototype.SaveFile = function (file) {
+        CodeEditor.prototype.SaveFile = function (file, sendToSelf) {
             //** SockJS goes here */
-            this.Sock.call('file', { name: file.Name, content: file.Content });
+            var id = sendToSelf ? 0 : this.ID;
+            this.Sock.call('file', { name: file.Name, content: file.Content, from: id });
         };
         CodeEditor.prototype.EditorTextChanged = function () {
             //** Change content of selected file */
@@ -51,7 +61,7 @@ var CodeEditing;
                 return;
             file.Content = this.MonacoEditor.getValue();
             //** Send file out to server!! */
-            this.SaveFile(file);
+            this.SaveFile(file, false);
         };
         CodeEditor.prototype.SelectFile = function (file) {
             //** Deselect every file, then select our file

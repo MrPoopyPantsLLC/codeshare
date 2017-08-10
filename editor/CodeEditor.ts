@@ -7,9 +7,11 @@ namespace CodeEditing
         Files:File[];
         Riot:any;
         Sock:any;
+        ID:number;
 
         constructor(){
             this.Files = [];
+            this.ID = Math.random();
         }
 
         RefreshEditor():void
@@ -25,25 +27,35 @@ namespace CodeEditing
                 let cur:File = this.Files[i];
 
                 if (cur.Selected === true)
-                {
-                    //** Unload lib of selected file */
-                    if (file.MonacoHint !== undefined) file.MonacoHint.dispose();
-                    file.MonacoHint = undefined;
-                }
+                    this.UnloadHint(cur);
                 else if (cur.MonacoHint === undefined)
-                {
-                    //** Load library if it isn't loaded */
-                    const fact =cur.Content;
-				    const factFilename = cur.Name;
-                    cur.MonacoHint = this.Monaco.languages.typescript.typescriptDefaults.addExtraLib(fact, factFilename);
-                }
+                    this.LoadHint(cur);
             }
             
             this.Riot.update();
         }
 
-        LoadFile(name:any, content:any):void
+        LoadHint(file:File):void
         {
+            //** Load library if it isn't loaded */
+            const fact = file.Content;
+            const factFilename = file.Name;
+            file.MonacoHint = this.Monaco.languages.typescript.typescriptDefaults.addExtraLib(fact, factFilename);
+        }
+
+        UnloadHint(file:File):void
+        {
+            //** Unload lib of selected file */
+            if (file.MonacoHint !== undefined) file.MonacoHint.dispose();
+            file.MonacoHint = undefined;
+        }
+
+        LoadFile(name:any, content:any, id:number):void
+        {
+            //** If file ID is equal to our ID, don't do anything - it is a callback from textchanged */
+            if (id && id === this.ID)
+                return;
+
             //** replace file if it exists */
             let exists = this.Files.filter((f) => f.Name === name);
             
@@ -51,6 +63,7 @@ namespace CodeEditing
                 {
                     exists[0].Name = name;
                     exists[0].Content = content;
+                    this.UnloadHint(exists[0]); //** Reload the hints for the updated file */
                 }
                 else
                     this.Files.push(new File(name, content));;
@@ -59,10 +72,11 @@ namespace CodeEditing
             this.RefreshEditor();
         }
 
-        SaveFile(file:File):void
+        SaveFile(file:File, sendToSelf:boolean):void
         {
             //** SockJS goes here */
-            this.Sock.call('file', { name:file.Name, content: file.Content });
+            let id:number = sendToSelf ? 0 : this.ID;
+            this.Sock.call('file', { name:file.Name, content: file.Content, from:id });
         }
 
         EditorTextChanged():void
@@ -74,7 +88,7 @@ namespace CodeEditing
             file.Content = this.MonacoEditor.getValue();
 
             //** Send file out to server!! */
-            this.SaveFile(file);
+            this.SaveFile(file, false);
         }
 
         SelectFile(file:File):void

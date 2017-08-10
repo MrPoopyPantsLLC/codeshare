@@ -24,7 +24,7 @@
         sock.on('file', (data) => {
             var name = data.name;
             var content = data.content;
-            this.CodeEditor.LoadFile(name, content);
+            this.CodeEditor.LoadFile(name, content, data.from);
         });
 
         riot.mount('editor', {CodeEditor : CodeEditor});
