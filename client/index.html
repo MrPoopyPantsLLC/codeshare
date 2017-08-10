@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+	<style>
+      .segment { border: 1px solid red; color:white; cursor: help; }
+      .segment:hover { border-color:yellow; }
+      .segment.black { background-color:black; }
+      .segment.green { background-color:green; }
+      .segment.blue { background-color:blue; }
+      .segment.purple { background-color:purple; }
+      .segment.other { background-color: #959622; }
+      .resulting { float:left; width: 35%; border-right: 1px solid #ADADAD; padding-right: 14px;}
+      .original-source { float:left; width: 35%; padding-left: 11px; }
+      .resulting #out { width: 95%; height: 300px; overflow: auto; } 
+      .app {padding-top: 40px;border: rgba(176, 209, 228, 0.25) solid 1px;overflow: hidden;margin: 40px -12px 0px -12px;padding: 13px 13px 0px 15px;background: rgba(183, 214, 231, 0.05);border-radius: 2px;}
+    </style>
+</head>
+<body>
+
+<!--<h2>Monaco Editor Sample</h2>
+<div id="container" style="width:800px;height:600px;border:1px solid grey"></div>-->
+
+<!--<script src="/monaco-editor/min/vs/loader.js"></script>-->
+
+<!--<script>
+	require.config({ paths: { 'vs': '../node_modules/monaco-editor/min/vs' }});
+	require(['vs/editor/editor.main'], function() {
+		window.editor = monaco.editor.create(document.getElementById('container'), {
+			value: [
+				'function x() {',
+				'\tconsole.log("Hello world!");',
+				'}'
+			].join('\n'),
+			language: 'javascript'
+		});
+	});
+</script>-->
+<section class="app" style="margin: 40px 10px 0px 10px;">
+    <div>Segment test: <input id="segment"/><span id="segout"></span></div>
+   
+      <textarea id="map" style="width: 95%; height: 300px;">
+      </textarea>
+    </div>
+    <div class="resulting">
+      <div style="">Resulting source<b id="targetname"></b>:</div>
+      <pre id="out"></pre>
+    </div>
+    <select id="FileSelect">
+    </select>
+    <div class="original-source">
+      <div style="">Original source<b id="sourcename"></b>:</div>
+      <pre id="inp" style="width: 95%; height: 300px; overflow: auto;"></pre>
+    </div>
+    </section>
+	<script src="/sockjs-client/dist/sockjs.min.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/debugger.js"></script>
+</body>
+</html>
