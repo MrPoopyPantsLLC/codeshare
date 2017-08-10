@@ -1,4 +1,4 @@
-var sock = new SockJS('http://localhost:9999/echo');
+var sock = new SockJS('/comms');
  sock.onopen = function() {
      console.log('open');
  };
@@ -11,3 +11,30 @@ var sock = new SockJS('http://localhost:9999/echo');
      sock.close();
      console.log('close');
  };
+
+
+ function InitSock(sock)
+ {
+    //** Store the func and the event */
+    var events = {};
+
+     sock.on = function (event, func)
+     {
+        events[event] = func;
+     }
+
+     sock.onmessage = function (e)
+     {
+         //** Call the function from the event */
+         let args = JSON.parse(e.data);
+         events[args.event](args.data);
+     }
+
+     sock.call = function (event, data)
+     {
+        sock.send(JSON.stringify({
+            event: event,
+            data : data
+        }));
+     }
+ }

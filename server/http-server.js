@@ -5,10 +5,10 @@ var http = require('http');
 const initHttp = () => {
     var server = http.createServer(app);
 
-    app.use(express.static(__dirname));
+    app.use(express.static(process.cwd()));
 
     app.get('/', function(req, res){
-        res.sendFile(__dirname + '/index.html');
+        res.sendFile(process.cwd() + '/index.html');
     });
 
     return server;
