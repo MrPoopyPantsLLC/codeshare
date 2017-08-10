@@ -5,6 +5,7 @@ namespace CodeEditing
         Monaco:any;
         MonacoEditor:any;
         Files:File[];
+        Riot:any;
 
         constructor(){
             this.Files = [];
@@ -35,7 +36,31 @@ namespace CodeEditing
 				    const factFilename = cur.Name;
                     cur.MonacoHint = this.Monaco.languages.typescript.typescriptDefaults.addExtraLib(fact, factFilename);
                 }
-            }         
+            }
+            
+            this.Riot.update();
+        }
+
+        LoadFile(file:any):void
+        {
+            //** replace file if it exists */
+            let exists = this.Files.filter((f) => f.Name === file.Name);
+            
+            if (exists.length > 0)
+                {
+                    exists[0].Name = file.Name;
+                    exists[0].Content = file.Content;
+                }
+                else
+                    this.Files.push(new File(file.Name, file.Content));;
+
+            //** Finally, refresh editor */
+            this.RefreshEditor();
+        }
+
+        SaveFile(file:File):void
+        {
+            //** SockJS goes here */
         }
 
         EditorTextChanged():void
@@ -45,6 +70,9 @@ namespace CodeEditing
             if (file === null)
                 return;
             file.Content = this.MonacoEditor.getValue();
+
+            //** Send file out to server!! */
+            this.SaveFile(file);
         }
 
         SelectFile(file:File):void
@@ -67,13 +95,19 @@ namespace CodeEditing
         Name:string;
         Content:string;
         Selected:boolean;
-
         MonacoHint:any;
+
         constructor(name:string, content:string)
         {
             this.Selected = false;
             this.Name = name;
             this.Content = content;
+        }
+
+        FileName():string
+        {
+            let split = this.Name.split("/");
+            return split[split.length - 1];
         }
     }
 }

@@ -25,6 +25,23 @@ var CodeEditing;
                     cur.MonacoHint = this.Monaco.languages.typescript.typescriptDefaults.addExtraLib(fact, factFilename);
                 }
             }
+            this.Riot.update();
+        };
+        CodeEditor.prototype.LoadFile = function (file) {
+            //** replace file if it exists */
+            var exists = this.Files.filter(function (f) { return f.Name === file.Name; });
+            if (exists.length > 0) {
+                exists[0].Name = file.Name;
+                exists[0].Content = file.Content;
+            }
+            else
+                this.Files.push(new File(file.Name, file.Content));
+            ;
+            //** Finally, refresh editor */
+            this.RefreshEditor();
+        };
+        CodeEditor.prototype.SaveFile = function (file) {
+            //** SockJS goes here */
         };
         CodeEditor.prototype.EditorTextChanged = function () {
             //** Change content of selected file */
@@ -32,6 +49,8 @@ var CodeEditing;
             if (file === null)
                 return;
             file.Content = this.MonacoEditor.getValue();
+            //** Send file out to server!! */
+            this.SaveFile(file);
         };
         CodeEditor.prototype.SelectFile = function (file) {
             //** Deselect every file, then select our file
@@ -52,6 +71,10 @@ var CodeEditing;
             this.Name = name;
             this.Content = content;
         }
+        File.prototype.FileName = function () {
+            var split = this.Name.split("/");
+            return split[split.length - 1];
+        };
         return File;
     }());
     CodeEditing.File = File;

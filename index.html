@@ -11,7 +11,9 @@
     <script src="https://cdn.jsdelivr.net/npm/riot@3.6/riot+compiler.min.js"></script>
     <script>
         this.CodeEditor = new CodeEditing.CodeEditor();
+        this.CodeEditor.Riot = riot;
         var files = this.CodeEditor.Files;
+
         files.push(new CodeEditing.File("test.js", "blahblah"));
         files.push(new CodeEditing.File("coolio.js", "gangsta"));
         files.push(new CodeEditing.File("hello.js", "class Kitty{}"));
@@ -34,7 +36,25 @@
                 //automaticLayout: true
             });
             CodeEditor.Monaco = this.monaco;
-            CodeEditor.RefreshEditor();
+            //CodeEditor.RefreshEditor();
+
+            // url (required), options (optional)
+        fetch('/get/userscripts', {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json'
+            }
+        }).then(function(response) {
+            response.json().then(function(data){
+            let files = data;
+            for (let i = 0; i < files.length; i++)
+             {
+                 this.CodeEditor.LoadFile(files[i]);
+             }
+            this.CodeEditor.RefreshEditor();
+            })
+        }
+        );
         });  
     </script>
 

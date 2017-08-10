@@ -3,7 +3,7 @@
         <div class="tabs-bar">
             <div class="file-control"> + </div>
             <div class="tab" each={ files } selected={Selected} onclick={parent.Select}> 
-                <label class="tab-text"> {Name} </label> 
+                <label class="tab-text"> {FileName()} </label> 
             </div>
         </div>
         <div class="editor" id="container" style="width:750px;height:750px;border:1px solid grey" onkeyup={EditorKeyPress}>
