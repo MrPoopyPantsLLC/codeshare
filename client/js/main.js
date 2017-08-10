@@ -1,4 +1,4 @@
-var sock = new SockJS('/echo');
+var sock = new SockJS('http://localhost:9999/echo');
  sock.onopen = function() {
      console.log('open');
  };
