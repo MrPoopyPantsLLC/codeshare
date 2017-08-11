@@ -74,9 +74,15 @@ namespace CodeEditing
 
         SaveFile(file:File, sendToSelf:boolean):void
         {
-            //** SockJS goes here */
-            let id:number = sendToSelf ? 0 : this.ID;
+            //** Send file over the socket
+            //** We use 'from' here so when we receive the file we just modifed back from the server, we don't do anything */
+            let id:number = sendToSelf ? -1 : this.ID;
             this.Sock.call('file', { name:file.Name, content: file.Content, from:id });
+        }
+
+        SaveToLive(file:File)
+        {
+            
         }
 
         EditorTextChanged():void
